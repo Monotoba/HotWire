@@ -26,8 +26,9 @@ from .foam_cutting import FoamCuttingDatabase, FoamCuttingCalculator
 class ChartWidget(QWidget):
     """Custom widget for displaying temperature chart"""
     
-    def __init__(self):
+    def __init__(self, foam_db=None):
         super().__init__()
+        self.foam_db = foam_db
         self.setup_ui()
         self.chart_data = []
         
@@ -86,6 +87,7 @@ class ChartWidget(QWidget):
         
         # Add foam cutting temperature ranges if in foam cutting mode
         if foam_type and optimal_temp:
+            # Get foam info from main window's foam database
             foam = self.foam_db.get_foam_type(foam_type)
             if foam:
                 # Add temperature range indicators
@@ -96,6 +98,7 @@ class ChartWidget(QWidget):
         info_text += f"Length: {wire_props.length:.2f} {wire_props.length_unit}"
         
         if foam_type:
+            # Get foam info from main window's foam database
             foam = self.foam_db.get_foam_type(foam_type)
             if foam:
                 info_text += f"\nFoam: {foam.name} | Optimal: {foam.optimal_temp_celsius}°C"
@@ -423,7 +426,7 @@ class MainWindow(QMainWindow):
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
         
-        self.chart_widget = ChartWidget()
+        self.chart_widget = ChartWidget(foam_db=self.foam_db)
         right_layout.addWidget(self.chart_widget)
         
         # Add panels to main layout
