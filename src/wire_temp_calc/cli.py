@@ -8,7 +8,7 @@ import argparse
 import sys
 from .wire_temp_calculator import WireTemperatureCalculator
 from .unit_conversions import WireGaugeConverter, LengthUnitConverter
-from .foam_cutting import FoamCuttingCalculator
+from .foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
 
 def create_parser():
     """Create command line argument parser"""
