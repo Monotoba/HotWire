@@ -10,16 +10,20 @@ __author__ = "Wire Temperature Calculator Team"
 __email__ = "support@wiretempcalc.com"
 __description__ = "Professional wire temperature and foam cutting calculator"
 
-from .wire_temp_calculator import WireTemperatureCalculator, WireProperties, ProjectManager
+from .wire_temp_calculator import (
+    WireTemperatureCalculator,
+    WireProperties,
+    ProjectManager,
+)
 from .unit_conversions import WireGaugeConverter, LengthUnitConverter
 from .foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
 
 __all__ = [
-    'WireTemperatureCalculator',
-    'WireProperties', 
-    'ProjectManager',
-    'WireGaugeConverter',
-    'LengthUnitConverter',
-    'FoamCuttingCalculator',
-    'FoamCuttingDatabase'
+    "WireTemperatureCalculator",
+    "WireProperties",
+    "ProjectManager",
+    "WireGaugeConverter",
+    "LengthUnitConverter",
+    "FoamCuttingCalculator",
+    "FoamCuttingDatabase",
 ]
