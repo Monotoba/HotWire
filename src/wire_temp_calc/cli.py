@@ -5,6 +5,7 @@ Professional foam cutting and wire heating calculator
 """
 
 import argparse
+import math
 import sys
 from .wire_temp_calculator import WireTemperatureCalculator
 from .unit_conversions import WireGaugeConverter, LengthUnitConverter
@@ -28,7 +29,10 @@ Examples:
   wire-temp-calc --list-foams
   
   # Get safety info for specific temperature
-  wire-temp-calc --safety-info EPS --temperature 250
+  wire-temp-calc --safety-info EPS 250
+
+  # Calculate a range of currents
+  wire-temp-calc --current-start 0.1 --current-end 5 --current-step 0.1
         """,
     )
 
@@ -62,24 +66,24 @@ Examples:
     # Current specifications
     current_group = parser.add_argument_group("Current Specifications")
     current_group.add_argument(
-        "--current", type=float, default=1.0, help="Current in Amperes (default: 1.0)"
+        "--current", type=float, default=None, help="Current in Amperes (default: 1.0)"
     )
     current_group.add_argument(
         "--current-start",
         type=float,
-        default=0.1,
+        default=None,
         help="Start current for range calculation (default: 0.1)",
     )
     current_group.add_argument(
         "--current-end",
         type=float,
-        default=5.0,
+        default=None,
         help="End current for range calculation (default: 5.0)",
     )
     current_group.add_argument(
         "--current-step",
         type=float,
-        default=0.1,
+        default=None,
         help="Current step for range calculation (default: 0.1)",
     )
 
@@ -134,15 +138,15 @@ Examples:
 def handle_list_foams():
     """Handle --list-foams option"""
     foam_db = FoamCuttingDatabase()
-    foams = foam_db.get_all_foams()
+    foams = foam_db.get_all_foam_types()
 
     print("Supported Foam Types:")
     print("=" * 60)
     for foam in foams:
         print(f"{foam.name:<12} | {foam.description}")
-        print(f"  Temperature range: {foam.min_temp_c}-{foam.max_temp_c}°C")
+        print(f"  Temperature range: {foam.min_temp_celsius}-{foam.max_temp_celsius}°C")
         print(f"  Cutting speed: {foam.cutting_speed}")
-        print(f"  Fire risk: {foam.fire_risk_level}")
+        print(f"  Notes: {foam.safety_notes}")
         print()
 
 
@@ -150,7 +154,12 @@ def handle_safety_info(foam_type, temperature_str):
     """Handle --safety-info option"""
     try:
         temperature = float(temperature_str)
+        if not math.isfinite(temperature):
+            raise ValueError
         foam_calc = FoamCuttingCalculator()
+        if not foam_calc.foam_db.get_foam_type(foam_type):
+            print(f"Error: Unknown foam type '{foam_type}'", file=sys.stderr)
+            sys.exit(1)
 
         safety_info = foam_calc.get_safety_recommendations(foam_type, temperature)
 
@@ -167,13 +176,12 @@ def handle_safety_info(foam_type, temperature_str):
             f"Workspace requirements: {safety_info['workspace_requirements']['workspace_size']}"
         )
 
-        if safety_info["safety_warnings"]:
+        if safety_info["safety_warning"]:
             print("Safety warnings:")
-            for warning in safety_info["safety_warnings"]:
-                print(f"  - {warning}")
+            print(f"  - {safety_info['safety_warning']}")
 
     except ValueError:
-        print(f"Error: Invalid temperature '{temperature_str}'")
+        print(f"Error: Invalid temperature '{temperature_str}'", file=sys.stderr)
         sys.exit(1)
 
 
@@ -195,6 +203,26 @@ def main():
     """Main CLI function"""
     parser = create_parser()
     args = parser.parse_args()
+
+    range_requested = any(
+        value is not None
+        for value in (args.current_start, args.current_end, args.current_step)
+    )
+    if range_requested and args.current is not None:
+        parser.error("--current cannot be combined with current range options")
+    if range_requested:
+        args.current_start = 0.1 if args.current_start is None else args.current_start
+        args.current_end = 5.0 if args.current_end is None else args.current_end
+        args.current_step = 0.1 if args.current_step is None else args.current_step
+        if not all(
+            math.isfinite(value)
+            for value in (args.current_start, args.current_end, args.current_step)
+        ) or not (0 <= args.current_start < args.current_end and args.current_step > 0):
+            parser.error("current range requires 0 <= start < end and step > 0")
+    else:
+        args.current = 1.0 if args.current is None else args.current
+        if not math.isfinite(args.current) or args.current < 0:
+            parser.error("--current must be a finite, nonnegative number")
 
     # Handle information options
     if args.list_foams:
@@ -242,7 +270,7 @@ def main():
 
         else:
             # Standard temperature calculation
-            if args.current_start != args.current_end:
+            if range_requested:
                 # Range calculation
                 chart_data = calc.generate_temperature_chart(
                     wire_props, args.current_start, args.current_end, args.current_step
