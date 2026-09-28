@@ -43,7 +43,7 @@ echo.
 
 REM Create virtual environment
 echo Creating virtual environment...
-python -m venv venv
+python -m venv .venv
 if %errorLevel% neq 0 (
     echo ERROR: Failed to create virtual environment
     pause
@@ -55,7 +55,7 @@ echo.
 
 REM Activate virtual environment
 echo Activating virtual environment...
-call venv\Scripts\activate.bat
+call .venv\Scripts\activate.bat
 if %errorLevel% neq 0 (
     echo ERROR: Failed to activate virtual environment
     pause
@@ -75,15 +75,15 @@ echo.
 
 REM Install requirements
 echo Installing dependencies...
-if exist requirements.txt (
-    pip install -r requirements.txt
+if exist setup.py (
+    python -m pip install -e .
     if %errorLevel% neq 0 (
         echo ERROR: Failed to install dependencies
         pause
         exit /b 1
     )
 ) else (
-    echo ERROR: requirements.txt not found
+    echo ERROR: package files not found
     pause
     exit /b 1
 )
@@ -126,7 +126,7 @@ echo Creating uninstall script...
 (
 echo @echo off
 echo echo Uninstalling Wire Temperature Calculator...
-echo rmdir /s /q venv
+echo rmdir /s /q .venv
 echo del "%USERPROFILE%\Desktop\Wire Temperature Calculator.lnk" 2^>nul
 echo del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Wire Temperature Calculator.lnk" 2^>nul
 echo echo Uninstallation complete!

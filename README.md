@@ -1,240 +1,62 @@
-# 🔥 Wire Temperature Calculator
+# HotWire — Wire Temperature Calculator
 
-[![CI/CD Pipeline](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml/badge.svg)](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml)
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml/badge.svg)](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
+[![Status: alpha](https://img.shields.io/badge/status-alpha-orange)](docs/model-validation.md)
 
-> **Project status:** Work in progress. The current CI and test suite need repair; no verified PyPI release or packaged desktop download is available yet. Calculated temperatures and foam guidance are estimates, not validated safety limits.
+A Python CLI and PySide6 desktop app for **estimating** steady-state wire temperature from current, diameter, length, and material. It also displays experimental foam cutting ranges. These ranges are **not safety limits**.
 
-> **Professional-grade wire temperature calculator with comprehensive foam cutting capabilities**
+## Status and scope
 
-## 🎯 Overview
+This is alpha software. The wire model has been checked for physical consistency and against published room-temperature resistivity for two representative alloys; **its temperature predictions have not been calibrated against measured wire temperatures**. The foam database has not been verified against manufacturer safety data sheets. Do not use the output to determine permissible exposure, ventilation adequacy, fire safety, or a safe operating temperature. See [model validation and limitations](docs/model-validation.md).
 
-The Wire Temperature Calculator is a sophisticated application for calculating wire temperatures and optimizing foam cutting operations. It combines precise thermal calculations with comprehensive safety monitoring, making it ideal for both hobbyists and professionals.
+The app supports Nichrome, Kanthal, and a generic stainless estimate; AWG, SWG, mm, mils, and inches for wire size; and mm, cm, inches, feet, metres, and yards for length. It can display a temperature chart, save/load JSON projects, and export/print a chart. The CLI can calculate one current or an explicit range, list foam types, and display preliminary foam information.
 
-### ✨ Key Features
+## Install from source
 
-- **🌡️ Multi-Unit Support**: AWG, SWG, mm, mils, inch for wire gauges
-- **📏 Length Units**: mm, cm, inch, feet, meters, yards  
-- **🔧 Materials**: Nichrome, Stainless Steel, Kanthal
-- **🧽 Foam Cutting**: 10 professional foam types with safety monitoring
-- **📊 Visualization**: Color-coded charts with safety indicators
-- **📄 Export**: PDF and print support
-- **💾 Project Management**: Save/load configurations
-- **🛡️ Safety First**: Comprehensive safety monitoring and warnings
+Python 3.10 or newer is required. From a checkout:
 
-## 🚀 Quick Start
-
-### GUI Application
-```bash
-python -m wire_temp_calc.main
-```
-
-### Command Line Interface
-```bash
-# Calculate temperature for 22 AWG nichrome wire
-wire-temp-calc --gauge 22 --material nichrome --current 1
-
-# Foam cutting with EPP foam
-wire-temp-calc --foam EPP --wire-diameter 0.644 --cutting-speed 5
-
-# List all supported foam types
-wire-temp-calc --list-foams
-```
-
-## 📦 Installation
-
-### Install from source
 ```bash
 git clone https://github.com/Monotoba/HotWire.git
 cd HotWire
 python3 -m venv .venv
-source .venv/bin/activate  # Linux/macOS; on Windows use .venv\Scripts\activate
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e .
-wire-temp-calc --help
 ```
 
-### Manual Installation
-```bash
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# On Windows use .venv\Scripts\activate
+Launch the GUI with `wire-temp-gui` or `python -m wire_temp_calc.main`. A desktop session is required. Run `wire-temp-calc --help` for CLI options. No PyPI or native installer availability is promised by this source installation guide.
 
-# Install dependencies
-pip install -e .
-
-# Run application
-python -m wire_temp_calc.main
-```
-
-## 🎯 Core Capabilities
-
-### Wire Temperature Calculation
-- **Precise thermal modeling** with material-specific properties
-- **Iterative temperature solving** accounting for resistance changes
-- **Multi-current range analysis** with customizable steps
-- **Real-time safety validation** with visual feedback
-
-### Foam Cutting Optimization
-- **10 professional foam types** with specific temperature ranges
-- **Automatic optimal temperature calculation** based on wire and foam properties
-- **Cutting speed recommendations** for different applications
-- **Safety monitoring** with real-time warnings
-
-### Unit System
-- **Bidirectional conversion** between any supported units
-- **Precision preservation** across conversions
-- **Flexible input methods** - enter values in any unit
-- **Professional display** with appropriate unit formatting
-
-### Safety Features
-- **Temperature range validation** for each foam type
-- **Fire risk assessment** (low/medium/high)
-- **Toxic fume warnings** for dangerous temperatures
-- **Ventilation and PPE recommendations**
-- **Emergency procedure guidelines**
-
-## 🧽 Supported Foam Types
-
-| Foam | Temperature Range | Best For | Characteristics |
-|------|------------------|----------|-----------------|
-| **EPP** | 220-260°C | RC Aircraft | Durable, impact resistant |
-| **EPS** | 180-220°C | Packaging | Lightweight, easy to cut |
-| **EVA** | 190-230°C | Crafts | Soft, flexible |
-| **XPS** | 200-240°C | Insulation | Dense, closed-cell |
-| **DEPRON** | 180-220°C | RC Models | Thin, rigid sheets |
-| **FOAM_BOARD** | 160-200°C | Presentations | Paper-faced |
-| **MEMORY** | 150-190°C | Cushioning | Temperature-sensitive |
-| **NEOPRENE** | 180-220°C | Weather Sealing | Weather-resistant |
-| **PU** | 170-210°C | Upholstery | Versatile |
-| **EPE** | 200-240°C | Packaging | Flexible, cushioning |
-
-## 📊 Example Usage
-
-### RC Aircraft Building
-```bash
-# EPP wing construction with 22 AWG wire
-wire-temp-calc --foam EPP --gauge 22 --material nichrome --length 3 --cutting-speed 5
-# Output: Optimal temperature: 240°C, Fire risk: medium, Ventilation: Required
-```
-
-### Craft Projects
-```bash
-# EPS foam board cutting
-wire-temp-calc --foam FOAM_BOARD --wire-diameter 0.5 --cutting-speed 2
-# Output: Optimal temperature: 180°C, Fire risk: low, Ventilation: Not required
-```
-
-### Industrial Applications
-```bash
-# XPS insulation cutting with safety check
-wire-temp-calc --safety-info XPS 250
-# Output: WARNING: Temperature too high! Maximum: 240°C
-```
-
-## 🛡️ Safety Features
-
-### Automatic Safety Monitoring
-- **Real-time temperature validation** against foam-specific limits
-- **Visual danger indicators** on charts (red zones)
-- **Fire risk assessment** with appropriate warnings
-- **Toxic fume alerts** for decomposition temperatures
-
-### Professional Safety Standards
-- **Ventilation requirements** based on foam type and temperature
-- **Personal protective equipment** recommendations
-- **Emergency procedures** for different scenarios
-- **Workspace safety guidelines** with volume considerations
-
-## 🧪 Testing
-
-The project includes comprehensive test coverage:
+## Examples
 
 ```bash
-# Run all tests
-pytest tests/ --cov=src/wire_temp_calc --cov-report=term
-
-# Run specific test suite
-pytest tests/test_foam_cutting.py
-
-# Run with coverage report
-pytest tests/ --cov-report=html
+wire-temp-calc --gauge 22 --material nichrome --length 2 --length-unit feet --current 1
+wire-temp-calc --current-start 0.1 --current-end 5 --current-step 0.1
+wire-temp-calc --list-foams
+wire-temp-calc --safety-info EPS 250
 ```
 
-**Test Coverage:**
-- ✅ Unit conversion accuracy tests
-- ✅ Physics behavior verification
-- ✅ Safety system validation
-- ✅ GUI functionality tests
-- ✅ Cross-platform compatibility
+The CLI's foam information is heuristic. Ventilation is recommended for hot-wire cutting regardless of whether the modeled temperature falls inside a listed cutting range. Read the material-specific safety data sheet and use suitable engineering controls.
 
-## 🏗️ Architecture
+## Development and release
 
-```
-wire-temperature-calculator/
-├── src/wire_temp_calc/          # Core package
-│   ├── wire_temp_calculator.py  # Temperature calculations
-│   ├── foam_cutting.py         # Foam cutting logic
-│   ├── unit_conversions.py     # Unit conversion system
-│   ├── main_window.py          # GUI implementation
-│   └── cli.py                  # Command line interface
-├── tests/                       # Comprehensive test suite
-├── docs/                        # Professional documentation
-├── scripts/                     # Utility scripts
-└── dist/                        # Distribution packages
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Quick Contribution Guide
 ```bash
-# Fork and clone
-git clone https://github.com/Monotoba/HotWire.git
-cd HotWire
-
-# Set up development environment
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-
-# Make changes and test
-pytest tests/
-black src/
-flake8 src/
-
-# Submit pull request
+python -m pip install -e '.[dev]'
+QT_QPA_PLATFORM=offscreen pytest tests/  # Linux headless test environment
+black --check src/
+mypy src/ --ignore-missing-imports
+python -m build
+python -m twine check dist/*
 ```
 
-## 📄 Documentation
+The current GitHub Actions matrix tests Python 3.10–3.13 on Linux, Windows, and macOS and builds source and wheel artifacts. [Release preparation](docs/release-checklist.md) records the remaining checks. A green CI build is not a validation of measured thermal performance.
 
-Comprehensive documentation available at:
-- **[Installation Guide](docs/installation/index.md)** - Detailed setup instructions
-- **[User Guide](docs/user-guide.md)** - Complete usage guide
+## Documentation and contribution
 
-## 🐛 Issues & Support
+- [Installation](docs/installation/index.md)
+- [User guide](docs/user-guide.md)
+- [Model validation and limitations](docs/model-validation.md)
+- [Release checklist](docs/release-checklist.md)
+- [Contributing](CONTRIBUTING.md) and [issues](https://github.com/Monotoba/HotWire/issues)
 
-- **Bug Reports and Feature Requests**: [GitHub Issues](https://github.com/Monotoba/HotWire/issues)
-
-## 📜 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **PySide6 Team** for the excellent Qt bindings
-- **PyQtGraph Team** for the visualization library
-- **Contributors** for their valuable input and testing
-- **RC Aircraft Community** for foam cutting expertise
-
----
-
-<div align="center">
-
-**Made with ❤️ for makers, hobbyists, and professionals worldwide**
-
-[⭐ Star this repo](https://github.com/Monotoba/HotWire) if you find it useful!
-
-</div>
+HotWire is licensed under the [MIT License](LICENSE).

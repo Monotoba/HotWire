@@ -22,13 +22,13 @@ with open(version_file, "r", encoding="utf-8") as f:
             version = line.split("=")[1].strip().strip('"').strip("'")
             break
     else:
-        version = "2.0.0"
+        version = "2.0.0a1"
 
 setup(
     name="wire-temperature-calculator",
     version=version,
     author="Wire Temperature Calculator Team",
-    description="Professional wire temperature calculator with comprehensive foam cutting capabilities",
+    description="Experimental wire temperature estimator with a PySide6 GUI",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Monotoba/HotWire",

@@ -146,14 +146,14 @@ class ChartWidget(QWidget):
         y_opt = foam.optimal_temp_celsius
         y_max = foam.max_temp_celsius
 
-        # Safe range (green background)
-        safe_range = pg.LinearRegionItem(
+        # This is an estimated cutting range, not a certified safety zone.
+        cutting_range = pg.LinearRegionItem(
             values=[y_min, y_max],
             orientation="horizontal",
-            brush=(0, 255, 0, 30),  # Green with transparency
-            pen={"color": (0, 255, 0, 100), "width": 1},
+            brush=(0, 100, 255, 30),
+            pen={"color": (0, 100, 255, 100), "width": 1},
         )
-        self.plot_widget.addItem(safe_range)
+        self.plot_widget.addItem(cutting_range)
 
         # Optimal range (yellow background, narrower)
         opt_range = pg.LinearRegionItem(
@@ -868,10 +868,10 @@ class MainWindow(QMainWindow):
         """Show about dialog"""
         about_text = """
         <h3>Wire Temperature Calculator</h3>
-        <p>Version 1.0</p>
+        <p>Alpha version 2.0.0a1 — experimental estimates</p>
         <p>This application calculates wire temperature based on current, 
         wire type, and physical properties.</p>
-        <p>Supports Nichrome and Stainless Steel wires in various gauges.</p>
+        <p>Supports Nichrome, Kanthal, and a generic stainless estimate.</p>
         <p>© 2024 - Open Source Application</p>
         """
 
