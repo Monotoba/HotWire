@@ -287,8 +287,7 @@ class InputPanel(QWidget):
         button_layout = QHBoxLayout()
 
         self.calculate_btn = QPushButton("Calculate")
-        self.calculate_btn.setStyleSheet(
-            """
+        self.calculate_btn.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
@@ -299,8 +298,7 @@ class InputPanel(QWidget):
             QPushButton:hover {
                 background-color: #45a049;
             }
-        """
-        )
+        """)
         button_layout.addWidget(self.calculate_btn)
 
         self.reset_btn = QPushButton("Reset")

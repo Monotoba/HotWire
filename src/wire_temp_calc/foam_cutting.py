@@ -498,15 +498,17 @@ class FoamCuttingCalculator:
             return {"ventilation": "adequate", "clearance": "1_meter"}
 
         requirements = {
-            "ventilation": "adequate"
-            if temperature_celsius <= foam.optimal_temp_celsius
-            else "enhanced",
+            "ventilation": (
+                "adequate"
+                if temperature_celsius <= foam.optimal_temp_celsius
+                else "enhanced"
+            ),
             "clearance": "1_meter",
             "fire_extinguisher": temperature_celsius > foam.max_temp_celsius - 20,
             "fume_extraction": temperature_celsius > foam.optimal_temp_celsius + 10,
-            "workspace_size": "adequate"
-            if workspace_volume_m3 >= 5.0
-            else "consider_larger_area",
+            "workspace_size": (
+                "adequate" if workspace_volume_m3 >= 5.0 else "consider_larger_area"
+            ),
         }
 
         return requirements

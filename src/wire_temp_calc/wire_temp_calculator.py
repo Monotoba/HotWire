@@ -163,10 +163,7 @@ class WireTemperatureCalculator:
 
         # Radiative heat transfer per unit length
         q_rad_per_length = (
-            emissivity
-            * sigma
-            * surface_area_per_length
-            * (temp_k**4 - ambient_k**4)
+            emissivity * sigma * surface_area_per_length * (temp_k**4 - ambient_k**4)
         )
 
         # Total heat transfer per unit length
