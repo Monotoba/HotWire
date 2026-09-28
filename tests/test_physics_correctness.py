@@ -7,8 +7,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from wire_temp_calculator import WireTemperatureCalculator
-from unit_conversions import LengthUnitConverter
+from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
+from wire_temp_calc.unit_conversions import LengthUnitConverter
 
 def test_length_physics():
     """Test that wire length affects temperature correctly"""

@@ -8,8 +8,8 @@ import os
 import math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from wire_temp_calculator import WireTemperatureCalculator
-from foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
+from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
+from wire_temp_calc.foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
 
 def test_foam_database():
     """Test foam cutting database"""

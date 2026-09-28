@@ -7,8 +7,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from wire_temp_calculator import WireTemperatureCalculator
-from unit_conversions import WireGaugeConverter
+from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
+from wire_temp_calc.unit_conversions import WireGaugeConverter
 
 def test_equivalent_wires():
     """Test that equivalent wire sizes produce similar temperatures"""

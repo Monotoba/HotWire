@@ -12,8 +12,8 @@ def test_complete_foam_cutting_workflow():
     print("Testing Complete Foam Cutting Workflow")
     print("=" * 60)
     
-    from wire_temp_calculator import WireTemperatureCalculator
-    from foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
+    from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
+    from wire_temp_calc.foam_cutting import FoamCuttingCalculator, FoamCuttingDatabase
     
     calc = WireTemperatureCalculator()
     foam_calc = FoamCuttingCalculator()
@@ -90,7 +90,7 @@ def test_wire_size_effect_on_foam_cutting():
     print("\n\nTesting Wire Size Effect on Foam Cutting")
     print("=" * 60)
     
-    from foam_cutting import FoamCuttingCalculator
+    from wire_temp_calc.foam_cutting import FoamCuttingCalculator
     
     calc = FoamCuttingCalculator()
     
@@ -128,7 +128,7 @@ def test_cutting_speed_effect():
     print("\n\nTesting Cutting Speed Effect")
     print("=" * 60)
     
-    from foam_cutting import FoamCuttingCalculator
+    from wire_temp_calc.foam_cutting import FoamCuttingCalculator
     
     calc = FoamCuttingCalculator()
     
@@ -166,7 +166,7 @@ def test_safety_features():
     print("\n\nTesting Safety Features")
     print("=" * 60)
     
-    from foam_cutting import FoamCuttingCalculator
+    from wire_temp_calc.foam_cutting import FoamCuttingCalculator
     
     calc = FoamCuttingCalculator()
     
@@ -213,8 +213,8 @@ def test_project_integration():
     print("\n\nTesting Project Integration")
     print("=" * 60)
     
-    from wire_temp_calculator import WireTemperatureCalculator, ProjectManager
-    from foam_cutting import FoamCuttingDatabase
+    from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator, ProjectManager
+    from wire_temp_calc.foam_cutting import FoamCuttingDatabase
     
     calc = WireTemperatureCalculator()
     project_mgr = ProjectManager()

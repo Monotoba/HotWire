@@ -3,7 +3,7 @@
 Test script for wire temperature calculator
 """
 
-from wire_temp_calculator import WireTemperatureCalculator, WireProperties
+from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator, WireProperties
 
 def test_basic_calculations():
     """Test basic temperature calculations"""

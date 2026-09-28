@@ -3,7 +3,7 @@
 Test script to verify GUI imports work correctly
 """
 
-def test_pyside6_imports():
+def check_pyside6_imports():
     """Test all PySide6 imports used in the application"""
     print("Testing PySide6 imports...")
     
@@ -43,15 +43,15 @@ def test_pyside6_imports():
         print(f"✗ Import error: {e}")
         return False
 
-def test_application_import():
+def check_application_import():
     """Test importing the main application"""
     print("\nTesting application import...")
     
     try:
-        from main_window import MainWindow, ChartWidget, InputPanel
+        from wire_temp_calc.main_window import MainWindow, ChartWidget, InputPanel
         print("✓ Main application imports successful")
         
-        from wire_temp_calculator import WireTemperatureCalculator, WireProperties, ProjectManager
+        from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator, WireProperties, ProjectManager
         print("✓ Calculator imports successful")
         
         return True
@@ -66,10 +66,10 @@ def main():
     print("=" * 50)
     
     # Test basic imports
-    imports_ok = test_pyside6_imports()
+    imports_ok = check_pyside6_imports()
     
     # Test application imports
-    app_ok = test_application_import()
+    app_ok = check_application_import()
     
     print("\n" + "=" * 50)
     
@@ -85,6 +85,14 @@ def main():
         print("  . venv/bin/activate && pip install --force-reinstall -r requirements.txt")
     
     return imports_ok and app_ok
+
+
+def test_pyside6_imports():
+    assert check_pyside6_imports()
+
+
+def test_application_import():
+    assert check_application_import()
 
 if __name__ == "__main__":
     success = main()

@@ -14,8 +14,8 @@ def test_complete_workflow():
     print("Testing Complete Workflow")
     print("=" * 50)
     
-    from wire_temp_calculator import WireTemperatureCalculator, ProjectManager
-    from unit_conversions import WireGaugeConverter, LengthUnitConverter
+    from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator, ProjectManager
+    from wire_temp_calc.unit_conversions import WireGaugeConverter, LengthUnitConverter
     
     calc = WireTemperatureCalculator()
     project_mgr = ProjectManager()
@@ -111,7 +111,7 @@ def test_ui_elements():
     print("=" * 50)
     
     try:
-        from main_window import InputPanel, MainWindow
+        from wire_temp_calc.main_window import InputPanel, MainWindow
         from PySide6.QtWidgets import QApplication
         
         # Create minimal QApplication for testing
@@ -147,7 +147,7 @@ def test_edge_cases():
     print("\n\nTesting Edge Cases")
     print("=" * 50)
     
-    from wire_temp_calculator import WireTemperatureCalculator
+    from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
     
     calc = WireTemperatureCalculator()
     

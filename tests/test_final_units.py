@@ -7,8 +7,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from wire_temp_calculator import WireTemperatureCalculator
-from unit_conversions import WireGaugeConverter, LengthUnitConverter
+from wire_temp_calc.wire_temp_calculator import WireTemperatureCalculator
+from wire_temp_calc.unit_conversions import WireGaugeConverter, LengthUnitConverter
 
 def test_wire_gauge_units():
     """Test wire gauge unit conversions"""
