@@ -578,17 +578,12 @@ class MainWindow(QMainWindow):
                 gauge_size, gauge_unit, wire_type, length, length_unit
             )
 
-            # If in foam cutting mode, calculate optimal temperature and provide recommendations
+            optimal_temp = None
+            # If in foam cutting mode, calculate optimal temperature for the chart
             if self.foam_cutting_mode and self.foam_type:
                 optimal_temp = self.calculator.calculate_foam_cutting_temperature(
                     self.foam_type, self.current_wire_props, cutting_speed
                 )
-
-                # Check if current temperature range is appropriate for foam cutting
-                self.check_foam_cutting_safety(optimal_temp)
-
-                # Update chart info with foam cutting recommendations
-                self.update_foam_cutting_info(optimal_temp)
 
             # Override resistance if specified
             resistance_text = self.input_panel.resistance_edit.text().strip()
@@ -610,12 +605,15 @@ class MainWindow(QMainWindow):
                 self.current_wire_props, current_start, current_end, current_step
             )
 
+            if optimal_temp is not None:
+                self.check_foam_cutting_safety(optimal_temp)
+
             # Update chart with foam cutting information if applicable
             self.chart_widget.update_chart(
                 self.chart_data,
                 self.current_wire_props,
                 self.foam_type,
-                optimal_temp if self.foam_cutting_mode else None,
+                optimal_temp,
             )
 
             # Update results table
@@ -655,23 +653,6 @@ class MainWindow(QMainWindow):
         if optimal_temp < min_temp_in_range or optimal_temp > max_temp_in_range:
             suggestion = f"For {self.foam_type} foam cutting, consider using a current range that produces {optimal_temp:.1f}°C for optimal results."
             QMessageBox.information(self, "Foam Cutting Recommendation", suggestion)
-
-    def update_foam_cutting_info(self, optimal_temp: float):
-        """Update chart with foam cutting information"""
-        if not self.foam_type or not self.chart_data:
-            return
-
-        foam_info = self.calculator.get_foam_cutting_info(self.foam_type)
-        if not foam_info:
-            return
-
-        # Add foam cutting information to chart
-        foam = self.foam_db.get_foam_type(self.foam_type)
-        if foam:
-            info_text = f"Foam: {foam.name} | Optimal: {foam.optimal_temp_celsius}°C | Range: {foam.min_temp_celsius}-{foam.max_temp_celsius}°C"
-
-            # Add this info to the chart (will be implemented in chart update)
-            pass
 
     def update_results_table(self):
         """Update results table with chart data"""
@@ -727,8 +708,8 @@ class MainWindow(QMainWindow):
 
                 # Update UI with loaded values
                 self.input_panel.wire_type_combo.setCurrentText(wire_props.material)
-                self.input_panel.gauge_edit.setText(f"{wire_props.gauge_size:.3f}")
                 self.input_panel.gauge_unit_combo.setCurrentText(wire_props.gauge_unit)
+                self.input_panel.gauge_edit.setText(f"{wire_props.gauge_size:.3f}")
                 self.input_panel.resistance_edit.setText(
                     f"{wire_props.resistance_per_foot:.4f}"
                 )
@@ -813,7 +794,7 @@ class MainWindow(QMainWindow):
                 printer.setOutputFormat(QPrinter.PdfFormat)
                 printer.setOutputFileName(filename)
                 printer.setPageSize(QPageSize(QPageSize.A4))
-                printer.setOrientation(QPageLayout.Landscape)
+                printer.setPageOrientation(QPageLayout.Landscape)
 
                 self.print_chart_to_printer(printer)
                 QMessageBox.information(self, "Success", "PDF exported successfully")
@@ -829,7 +810,7 @@ class MainWindow(QMainWindow):
 
         printer = QPrinter(QPrinter.HighResolution)
         printer.setPageSize(QPageSize(QPageSize.A4))
-        printer.setOrientation(QPageLayout.Landscape)
+        printer.setPageOrientation(QPageLayout.Landscape)
 
         dialog = QPrintDialog(printer, self)
         if dialog.exec() == QPrintDialog.Accepted:
@@ -841,44 +822,47 @@ class MainWindow(QMainWindow):
     def print_chart_to_printer(self, printer):
         """Print chart to given printer"""
         painter = QPainter()
-        painter.begin(printer)
+        if not painter.begin(printer):
+            raise RuntimeError("Could not start printer output")
 
-        # Get chart pixmap
-        pixmap = self.chart_widget.plot_widget.grab()
+        try:
+            # Get chart pixmap
+            pixmap = self.chart_widget.plot_widget.grab()
 
-        # Scale to fit page
-        page_rect = printer.pageRect(QPrinter.DevicePixel)
-        scaled_pixmap = pixmap.scaled(
-            page_rect.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-        )
+            # Scale to fit page
+            page_rect = printer.pageRect(QPrinter.DevicePixel)
+            scaled_pixmap = pixmap.scaled(
+                page_rect.size().toSize(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
 
-        # Center on page
-        x = (page_rect.width() - scaled_pixmap.width()) // 2
-        y = (page_rect.height() - scaled_pixmap.height()) // 2
+            # Center on page
+            x = int((page_rect.width() - scaled_pixmap.width()) // 2)
+            y = int((page_rect.height() - scaled_pixmap.height()) // 2)
 
-        painter.drawPixmap(x, y, scaled_pixmap)
+            painter.drawPixmap(x, y, scaled_pixmap)
 
-        # Add title and info
-        painter.setPen(Qt.black)
-        font = painter.font()
-        font.setPointSize(12)
-        font.setBold(True)
-        painter.setFont(font)
+            # Add title and info
+            painter.setPen(Qt.black)
+            font = painter.font()
+            font.setPointSize(12)
+            font.setBold(True)
+            painter.setFont(font)
 
-        title = f"Wire Temperature Chart - {self.current_wire_props.gauge} AWG {self.current_wire_props.material.title()}"
-        painter.drawText(page_rect.width() // 2 - 200, 30, title)
+            wire = self.current_wire_props
+            title = f"Wire Temperature Chart - {wire.gauge_size:g} {wire.gauge_unit} {wire.material.title()}"
+            painter.drawText(int(page_rect.width() // 2 - 200), 30, title)
 
-        # Add date
-        font.setPointSize(8)
-        font.setBold(False)
-        painter.setFont(font)
-        painter.drawText(
-            page_rect.width() - 200,
-            page_rect.height() - 20,
-            f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        )
-
-        painter.end()
+            # Add date
+            font.setPointSize(8)
+            font.setBold(False)
+            painter.setFont(font)
+            painter.drawText(
+                int(page_rect.width() - 200),
+                int(page_rect.height() - 20),
+                f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            )
+        finally:
+            painter.end()
 
     def show_about(self):
         """Show about dialog"""
