@@ -78,6 +78,15 @@ class WireTemperatureCalculator:
         "copper": 1.0,  # Copper baseline
     }
 
+    # Representative 20°C resistivity in Ω·mm²/m. Nichrome 80 and Kanthal A-1
+    # values are from their manufacturer datasheets; stainless is an estimate
+    # because alloy grade and condition are not specified by the UI.
+    MATERIAL_RESISTIVITY = {
+        "nichrome": 1.09,
+        "kanthal": 1.45,
+        "stainless": 0.672,
+    }
+
     def __init__(self):
         self.ambient_temp = 20.0  # °C
         self.foam_db = FoamCuttingDatabase()
@@ -96,30 +105,34 @@ class WireTemperatureCalculator:
         Returns:
             Temperature in Celsius
         """
-        # Calculate resistance at operating temperature (iterative approach)
-        temp = self.ambient_temp
+        if not math.isfinite(current) or current < 0:
+            raise ValueError("Current must be finite and nonnegative")
+        if current == 0:
+            return self.ambient_temp
 
-        # Iterative solution for temperature
-        for _ in range(10):  # Max iterations
-            # Calculate resistance at current temperature
-            resistance = self._calculate_resistance(wire_props, temp)
+        # Balance electrical input power with convection and radiation losses.
+        # Bisection avoids oscillation of the previous fixed-point iteration.
+        def net_heat(temp: float) -> float:
+            power = current**2 * self._calculate_resistance(wire_props, temp)
+            heat_loss = self._calculate_heat_transfer(wire_props, temp) * (
+                temp - self.ambient_temp
+            )
+            return power - heat_loss
 
-            # Calculate power dissipated
-            power = current**2 * resistance
+        low = self.ambient_temp
+        high = max(100.0, self.ambient_temp + 80.0)
+        while net_heat(high) > 0 and high < 2000.0:
+            high = min(high * 2, 2000.0)
+        if net_heat(high) > 0:
+            raise ValueError("No equilibrium found below 2000°C for this current")
 
-            # Calculate heat transfer
-            heat_transfer = self._calculate_heat_transfer(wire_props, temp)
-
-            # New temperature estimate
-            new_temp = self.ambient_temp + (power / heat_transfer)
-
-            # Check convergence
-            if abs(new_temp - temp) < 0.1:
-                break
-
-            temp = new_temp
-
-        return temp
+        for _ in range(60):
+            middle = (low + high) / 2
+            if net_heat(middle) > 0:
+                low = middle
+            else:
+                high = middle
+        return (low + high) / 2
 
     def _calculate_resistance(self, wire_props: WireProperties, temp: float) -> float:
         """Calculate resistance at given temperature"""
@@ -129,7 +142,10 @@ class WireTemperatureCalculator:
         alpha = material_props["resistivity_temp_coeff"]
 
         # Base resistance at room temperature
-        base_resistance = wire_props.resistance_per_foot * wire_props.length
+        length_feet = (
+            LengthUnitConverter.to_mm(wire_props.length, wire_props.length_unit) / 304.8
+        )
+        base_resistance = wire_props.resistance_per_foot * length_feet
 
         # Resistance at operating temperature
         resistance = base_resistance * (1 + alpha * (temp - 20.0))
@@ -246,34 +262,16 @@ class WireTemperatureCalculator:
         # Convert gauge to diameter in mm
         diameter_mm = WireGaugeConverter.convert_gauge_to_mm(gauge_size, gauge_unit)
 
-        # Calculate resistance based on material and diameter
-        # Use copper as baseline and apply material factor
-
-        # For AWG sizes, use known copper resistance values
-        if gauge_unit == "AWG" and gauge_size in self.AWG_SPECS:
-            copper_resistance_per_foot = self.AWG_SPECS[int(gauge_size)][
-                "resistance_ohm_per_foot"
-            ]
-        else:
-            # Calculate resistance based on diameter (copper baseline)
-            # R = ρ * L/A, where A = π * (d/2)²
-            # Using copper resistivity as baseline
-            copper_resistivity_ohm_mm = 1.68e-5  # Ohm·mm
-            area_mm2 = math.pi * (diameter_mm / 2) ** 2
-            copper_resistance_per_mm = copper_resistivity_ohm_mm / area_mm2
-            copper_resistance_per_foot = copper_resistance_per_mm * 304.8  # mm per foot
-
-        # Apply material resistance factor
-        if material in self.MATERIAL_RESISTANCE_FACTORS:
-            resistance_factor = self.MATERIAL_RESISTANCE_FACTORS[material]
-        elif material.lower() in ["kanthal", "fechral"]:
-            # Handle kanthal variations
-            resistance_factor = 70.0
-        else:
+        if not math.isfinite(diameter_mm) or diameter_mm <= 0:
+            raise ValueError("Wire diameter must be finite and positive")
+        if not math.isfinite(length) or length <= 0:
+            raise ValueError("Wire length must be finite and positive")
+        if material not in self.MATERIAL_RESISTIVITY:
             raise ValueError(f"Unsupported material: {material}")
 
-        resistance_per_foot = copper_resistance_per_foot * resistance_factor
-        resistance_per_meter = resistance_per_foot * 3.28084  # Convert to per meter
+        area_mm2 = math.pi * (diameter_mm / 2) ** 2
+        resistance_per_meter = self.MATERIAL_RESISTIVITY[material] / area_mm2
+        resistance_per_foot = resistance_per_meter * 0.3048
 
         return WireProperties(
             gauge_size=gauge_size,

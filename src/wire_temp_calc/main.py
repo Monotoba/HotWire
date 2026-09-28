@@ -20,7 +20,9 @@ def main():
 
     # Set application properties
     app.setApplicationName("Wire Temperature Calculator")
-    app.setApplicationVersion("2.0.0")
+    from . import __version__
+
+    app.setApplicationVersion(__version__)
     app.setOrganizationName("WireTempCalc")
     app.setOrganizationDomain("wiretempcalc.com")
 

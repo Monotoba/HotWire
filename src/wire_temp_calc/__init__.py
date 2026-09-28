@@ -5,10 +5,10 @@ A comprehensive application for calculating wire temperatures and foam cutting p
 with support for multiple wire gauge units, length units, and foam types.
 """
 
-__version__ = "2.0.0"
+__version__ = "2.0.0a1"
 __author__ = "Wire Temperature Calculator Team"
-__email__ = "support@wiretempcalc.com"
-__description__ = "Professional wire temperature and foam cutting calculator"
+__email__ = ""
+__description__ = "Experimental wire temperature estimator"
 
 from .wire_temp_calculator import (
     WireTemperatureCalculator,

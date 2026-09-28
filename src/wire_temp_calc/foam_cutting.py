@@ -286,7 +286,7 @@ class FoamCuttingDatabase:
         if temperature_celsius < foam.min_temp_celsius:
             return f"Temperature too low for {foam.name}. May not cut effectively. Recommended: {foam.min_temp_celsius}-{foam.max_temp_celsius}°C."
         elif temperature_celsius > foam.max_temp_celsius:
-            return f"WARNING: Temperature too high for {foam.name}! Risk of decomposition and toxic fumes. Maximum: {foam.max_temp_celsius}°C."
+            return f"WARNING: Above the modeled cutting range for {foam.name}; overheating can increase fume and fire hazards. Modeled upper bound: {foam.max_temp_celsius}°C. Consult the material safety data sheet."
         elif temperature_celsius > foam.optimal_temp_celsius + 10:
             return f"Temperature above optimal for {foam.name}. Consider reducing to {foam.optimal_temp_celsius}°C for cleaner cuts."
 
@@ -446,7 +446,8 @@ class FoamCuttingCalculator:
             "safety_warning": self.foam_db.get_safety_warning(
                 foam_type, wire_temperature
             ),
-            "ventilation_required": wire_temperature > foam.optimal_temp_celsius + 10,
+            # A temperature threshold cannot establish that fume exposure is safe.
+            "ventilation_required": True,
             "fume_extraction_recommended": wire_temperature
             > foam.max_temp_celsius - 20,
             "fire_risk_level": self._assess_fire_risk(foam_type, wire_temperature),

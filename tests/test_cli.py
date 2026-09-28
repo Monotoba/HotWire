@@ -34,7 +34,8 @@ def test_safety_info_and_warning(command):
     result = run_cli(command, "--safety-info", "EPS", "250")
     assert result.returncode == 0, result.stderr
     assert "Fire risk level: high" in result.stdout
-    assert "Maximum: 220°C" in result.stdout
+    assert "Modeled upper bound: 220°C" in result.stdout
+    assert "Ventilation required: Yes" in result.stdout
 
 
 @pytest.mark.parametrize(
