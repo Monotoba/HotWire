@@ -39,19 +39,18 @@ By participating in this project, you agree to abide by our Code of Conduct:
 1. **Fork the repository**
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/yourusername/wire-temperature-calculator.git
-   cd wire-temperature-calculator
+   git clone https://github.com/Monotoba/HotWire.git
+   cd HotWire
    ```
 
 3. **Set up development environment**:
    ```bash
-   python3.13 -m venv venv
-   source venv/bin/activate  # Linux/Mac
+   python3 -m venv .venv
+   source .venv/bin/activate  # Linux/macOS
    # or
-   venv\Scripts\activate  # Windows
+   .venv\Scripts\activate  # Windows
    
-   pip install -r requirements.txt
-   pip install -r requirements-dev.txt
+   pip install -e ".[dev]"
    ```
 
 4. **Create feature branch**:
@@ -249,7 +248,6 @@ Follow [Semantic Versioning](https://semver.org/):
 
 - **GitHub Issues**: Bug reports and feature requests
 - **GitHub Discussions**: General questions and discussions
-- **Email**: support@wiretempcalc.com for security issues
 
 ### Recognition
 

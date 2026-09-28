@@ -1,10 +1,10 @@
 # 🔥 Wire Temperature Calculator
 
-[![CI/CD Pipeline](https://github.com/yourusername/wire-temperature-calculator/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/yourusername/wire-temperature-calculator/actions)
+[![CI/CD Pipeline](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml/badge.svg)](https://github.com/Monotoba/HotWire/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI Version](https://img.shields.io/pypi/v/wire-temperature-calculator)](https://pypi.org/project/wire-temperature-calculator/)
-[![Downloads](https://pepy.tech/badge/wire-temperature-calculator)](https://pepy.tech/project/wire-temperature-calculator)
+
+> **Project status:** Work in progress. The current CI and test suite need repair; no verified PyPI release or packaged desktop download is available yet. Calculated temperatures and foam guidance are estimates, not validated safety limits.
 
 > **Professional-grade wire temperature calculator with comprehensive foam cutting capabilities**
 
@@ -25,11 +25,9 @@ The Wire Temperature Calculator is a sophisticated application for calculating w
 
 ## 🚀 Quick Start
 
-### GUI Application (Recommended)
+### GUI Application
 ```bash
-# One-click installation and launch
-./activate_and_run.sh  # Linux/Mac
-activate_and_run.bat   # Windows
+python -m wire_temp_calc.main
 ```
 
 ### Command Line Interface
@@ -46,30 +44,25 @@ wire-temp-calc --list-foams
 
 ## 📦 Installation
 
-### Automated Installation (Recommended)
+### Install from source
 ```bash
-# Clone and install
-git clone https://github.com/yourusername/wire-temperature-calculator.git
-cd wire-temperature-calculator
-./install.sh  # Linux/Mac
-install.bat   # Windows
-```
-
-### PyPI Installation
-```bash
-pip install wire-temperature-calculator
+git clone https://github.com/Monotoba/HotWire.git
+cd HotWire
+python3 -m venv .venv
+source .venv/bin/activate  # Linux/macOS; on Windows use .venv\Scripts\activate
+python -m pip install -e .
 wire-temp-calc --help
 ```
 
 ### Manual Installation
 ```bash
 # Create virtual environment
-python3.13 -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+python3 -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# On Windows use .venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run application
 python -m wire_temp_calc.main
@@ -199,11 +192,13 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ### Quick Contribution Guide
 ```bash
 # Fork and clone
-git clone https://github.com/yourusername/wire-temperature-calculator.git
+git clone https://github.com/Monotoba/HotWire.git
+cd HotWire
 
 # Set up development environment
-./install.sh
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
 
 # Make changes and test
 pytest tests/
@@ -213,26 +208,15 @@ flake8 src/
 # Submit pull request
 ```
 
-## 📈 Performance
-
-- **Temperature calculations**: <1ms response time
-- **Chart rendering**: 60 FPS smooth interaction
-- **Memory efficient**: <100MB typical usage
-- **Cross-platform**: Tested on Windows, macOS, Linux
-
 ## 📄 Documentation
 
 Comprehensive documentation available at:
 - **[Installation Guide](docs/installation/index.md)** - Detailed setup instructions
 - **[User Guide](docs/user-guide.md)** - Complete usage guide
-- **[API Reference](docs/api/index.md)** - Developer documentation
-- **[Safety Guidelines](docs/safety.md)** - Important safety information
 
 ## 🐛 Issues & Support
 
-- **Bug Reports**: [GitHub Issues](https://github.com/yourusername/wire-temperature-calculator/issues)
-- **Feature Requests**: [GitHub Discussions](https://github.com/yourusername/wire-temperature-calculator/discussions)
-- **Security Issues**: security@wiretempcalc.com
+- **Bug Reports and Feature Requests**: [GitHub Issues](https://github.com/Monotoba/HotWire/issues)
 
 ## 📜 License
 
@@ -251,6 +235,6 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 **Made with ❤️ for makers, hobbyists, and professionals worldwide**
 
-[⭐ Star this repo](https://github.com/yourusername/wire-temperature-calculator) if you find it useful!
+[⭐ Star this repo](https://github.com/Monotoba/HotWire) if you find it useful!
 
 </div>
