@@ -141,6 +141,7 @@ class WireGaugeConverter:
 
         # If exact match, return integer
         if min_diff < 0.001:
+            assert closest_awg is not None
             return closest_awg
 
         # Otherwise, calculate fractional AWG using inverse formula
@@ -197,9 +198,11 @@ class WireGaugeConverter:
 
         # If exact match, return integer
         if min_diff < 0.001:
+            assert closest_swg is not None
             return closest_swg
 
         # Otherwise, return float based on interpolation
+        assert closest_swg is not None
         return closest_swg + (diameter_mm - cls.SWG_TO_MM[closest_swg]) / min_diff
 
     @classmethod
@@ -280,6 +283,7 @@ class WireGaugeConverter:
                 ]
         else:
             return []
+        return []
 
 
 class LengthUnitConverter:

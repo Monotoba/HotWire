@@ -5,7 +5,7 @@ Provides recommended cutting temperatures for various foam types
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import math
 
 
@@ -292,7 +292,7 @@ class FoamCuttingDatabase:
 
         return None
 
-    def get_cutting_recommendations(self, foam_key: str) -> Dict[str, any]:
+    def get_cutting_recommendations(self, foam_key: str) -> Dict[str, Any]:
         """Get cutting recommendations for foam type"""
         foam = self.get_foam_type(foam_key)
         if not foam:
@@ -432,7 +432,7 @@ class FoamCuttingCalculator:
 
     def get_safety_recommendations(
         self, foam_type: str, wire_temperature: float, workspace_volume_m3: float = 10.0
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """Get safety recommendations for foam cutting operation"""
         foam = self.foam_db.get_foam_type(foam_type)
         if not foam:
@@ -491,7 +491,7 @@ class FoamCuttingCalculator:
 
     def _get_workspace_requirements(
         self, foam_type: str, temperature_celsius: float, workspace_volume_m3: float
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """Get workspace requirements"""
         foam = self.foam_db.get_foam_type(foam_type)
         if not foam:
@@ -515,7 +515,7 @@ class FoamCuttingCalculator:
 
 
 # Convenience functions
-def get_foam_cutting_info(foam_type: str) -> Dict[str, any]:
+def get_foam_cutting_info(foam_type: str) -> Dict[str, Any]:
     """Get complete foam cutting information"""
     calculator = FoamCuttingCalculator()
     foam = calculator.foam_db.get_foam_type(foam_type)
@@ -533,7 +533,7 @@ def get_foam_cutting_info(foam_type: str) -> Dict[str, any]:
     }
 
 
-def suggest_foam_for_temperature(temperature_celsius: float) -> List[Dict[str, any]]:
+def suggest_foam_for_temperature(temperature_celsius: float) -> List[Dict[str, Any]]:
     """Suggest foam types suitable for given temperature"""
     calculator = FoamCuttingCalculator()
     suitable_foams = calculator.foam_db.get_foam_suitable_for_temperature(
@@ -572,8 +572,8 @@ if __name__ == "__main__":
 
     print(f"\nTemperature 200°C suitable foams:")
     suitable = suggest_foam_for_temperature(200)
-    for foam in suitable:
-        print(f"  {foam['abbreviation']}: {foam['name']}")
+    for item in suitable:
+        print(f"  {item['abbreviation']}: {item['name']}")
 
     print(f"\nSafety test for EPS at 220°C:")
     calc = FoamCuttingCalculator()

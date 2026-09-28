@@ -6,7 +6,7 @@ Estimates wire temperature based on current, wire type, and physical properties
 
 import math
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 import json
 from .unit_conversions import (
     WireGaugeConverter,
@@ -193,7 +193,7 @@ class WireTemperatureCalculator:
 
     def get_foam_cutting_recommendations(
         self, foam_type: str, wire_temperature: float, workspace_volume_m3: float = 10.0
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """Get foam cutting recommendations and safety information"""
         return self.foam_calculator.get_safety_recommendations(
             foam_type, wire_temperature, workspace_volume_m3
@@ -211,7 +211,7 @@ class WireTemperatureCalculator:
         """Get safety warning for foam cutting"""
         return self.foam_db.get_safety_warning(foam_type, wire_temperature)
 
-    def get_foam_cutting_info(self, foam_type: str) -> Dict[str, any]:
+    def get_foam_cutting_info(self, foam_type: str) -> Dict[str, Any]:
         """Get complete foam cutting information"""
         return self.foam_calculator.foam_db.get_cutting_recommendations(foam_type)
 
@@ -251,7 +251,7 @@ class WireTemperatureCalculator:
 
         # For AWG sizes, use known copper resistance values
         if gauge_unit == "AWG" and gauge_size in self.AWG_SPECS:
-            copper_resistance_per_foot = self.AWG_SPECS[gauge_size][
+            copper_resistance_per_foot = self.AWG_SPECS[int(gauge_size)][
                 "resistance_ohm_per_foot"
             ]
         else:
